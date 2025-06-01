@@ -1,0 +1,29 @@
+name: Maven Deploy to Tomcat
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch as needed
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Java Environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build and Package with Maven
+        run: mvn clean package
+
+      - name: Securely Deploy WAR to Apache Tomcat
+        run: |
+          curl -u ${{ secrets.TOMCAT_USERNAME }}:${{ secrets.TOMCAT_PASSWORD }} \
+               -T target/app.war \
+               "${{ secrets.TOMCAT_SERVER_URL }}/manager/text/deploy?path=/app"
