@@ -1,0 +1,25 @@
+name: Java CI/CD with Jenkins and Tomcat
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Build Java Application
+        run: |
+          mvn clean package
+          echo "Java application built successfully"
+
+      - name: Trigger Jenkins Job
+        run: |
+          curl -X POST "http://<JENKINS_SERVER>/job/<JOB_NAME>/build?token=<JENKINS_TOKEN>"
+        env:
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
